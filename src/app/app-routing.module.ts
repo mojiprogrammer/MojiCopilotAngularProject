@@ -2,13 +2,14 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 // project import
-import { AdminComponent } from './theme/layout/admin/admin.component';
+
+import { HomePageComponent } from './demo/home-page/home-page.component';
 import { GuestComponent } from './theme/layout/guest/guest.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: AdminComponent,
+    component: HomePageComponent,
     children: [
       {
         path: '',
