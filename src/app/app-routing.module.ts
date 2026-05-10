@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
 // project import
 import { AdminComponent } from './theme/layout/admin/admin.component';
@@ -12,8 +12,12 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'dashboard',
+        redirectTo: 'home-page',
         pathMatch: 'full'
+      },
+      {
+        path: 'home-page',
+        loadComponent: () => import('./demo/home-page/home-page.component').then((c) => c.HomePageComponent)
       },
       {
         path: 'dashboard',
@@ -61,4 +65,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }
