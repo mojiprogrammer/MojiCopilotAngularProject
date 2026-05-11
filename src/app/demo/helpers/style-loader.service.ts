@@ -7,29 +7,6 @@ export class StyleLoaderService
 {
   private loadedStyles: Map<string, HTMLLinkElement> = new Map();
   private loadedScripts: Map<string, HTMLScriptElement> = new Map();
-  private defaultStylesLoaded = false;
-  private defaultScriptsLoaded = false;
-
-  loadDefaultStyles()
-  {
-    if (!this.defaultStylesLoaded)
-    {
-      // Load Bootstrap
-      this.loadStyle('bootstrap', 'node_modules/bootstrap/scss/bootstrap.scss');
-      this.loadStyle('app-styles', 'src/styles.scss');
-      this.defaultStylesLoaded = true;
-    }
-  }
-
-  loadDefaultScripts()
-  {
-    if (!this.defaultScriptsLoaded)
-    {
-      // Load default app scripts
-      this.loadScript('apexcharts', 'node_modules/apexcharts/dist/apexcharts.min.js');
-      this.defaultScriptsLoaded = true;
-    }
-  }
 
   loadLandingPageStyles()
   {
@@ -38,11 +15,18 @@ export class StyleLoaderService
 
     // Load landing page styles
     const landingStyles = [
-      { name: 'bootstrap-landing', path: 'assets/home-page-assests/assets/css/bootstrap-5.0.5-alpha.min.css' },
-      { name: 'lineicons', path: 'assets/home-page-assests/assets/css/LineIcons.2.0.css' },
-      { name: 'animate', path: 'assets/home-page-assests/assets/css/animate.css' },
-      { name: 'tiny-slider', path: 'assets/home-page-assests/assets/css/tiny-slider.css' },
-      { name: 'main-landing', path: 'assets/home-page-assests/assets/css/main.css' }
+
+      { name: 'bootstrap-landing-css', path: 'assets/parallex-assets/css/bootstrap.min.css' },
+      { name: 'fontawesome-css', path: 'assets/parallex-assets/css/font-awesome.min.css' },
+      { name: 'lineicons-css', path: 'assets/parallex-assets/css/line-icons.css' },
+      { name: 'carousel-css', path: 'assets/parallex-assets/css/owl.carousel.css' },
+      { name: 'owltheme-css', path: 'assets/parallex-assets/css/owl.theme.css' },
+      { name: 'nivo-css', path: 'assets/parallex-assets/css/nivo-lightbox.css' },
+      { name: 'magnific-css', path: 'assets/parallex-assets/css/magnific-popup.css' },
+      { name: 'slicknav-css', path: 'assets/parallex-assets/css/slicknav.css' },
+      { name: 'animate-css', path: 'assets/parallex-assets/css/animate.css' },
+      { name: 'main-css', path: 'assets/parallex-assets/css/main.css' },
+      { name: 'responsive-css', path: 'assets/parallex-assets/css/responsive.css' }
     ];
 
     landingStyles.forEach(style =>
@@ -58,10 +42,25 @@ export class StyleLoaderService
 
     // Load landing page JavaScript files
     const landingScripts = [
-      { name: 'bootstrap-js', path: 'assets/home-page-assests/assets/js/bootstrap.bundle-5.0.0.alpha-min.js' },
-      { name: 'wow', path: 'assets/home-page-assests/assets/js/wow.min.js' },
-      { name: 'tiny-slider-js', path: 'assets/home-page-assests/assets/js/tiny-slider.js' },
-      { name: 'main-js', path: 'assets/home-page-assests/assets/js/main.js' }
+      { name: 'jquery-js', path: 'assets/parallex-assets/js/jquery-min.js' },
+      { name: 'popper-js', path: 'assets/parallex-assets/js/popper.min.js' },
+      { name: 'bootstrap-js', path: 'assets/parallex-assets/js/bootstrap.min.js' },
+      { name: 'jquery-mixitup-js', path: 'assets/parallex-assets/js/jquery.mixitup.js' },
+      { name: 'nivo-lightbox-js', path: 'assets/parallex-assets/js/nivo-lightbox.js' },
+      { name: 'owl-carousel-js', path: 'assets/parallex-assets/js/owl.carousel.js' },
+      { name: 'jquery-stellar-js', path: 'assets/parallex-assets/js/jquery.stellar.min.js' },
+      { name: 'jquery-nav-js', path: 'assets/parallex-assets/js/jquery.nav.js' },
+      { name: 'scrolling-nav-js', path: 'assets/parallex-assets/js/scrolling-nav.js' },
+      { name: 'jquery-easing-js', path: 'assets/parallex-assets/js/jquery.easing.min.js' },
+      { name: 'jquery-slicknav-js', path: 'assets/parallex-assets/js/jquery.slicknav.js' },
+      { name: 'wow-js', path: 'assets/parallex-assets/js/wow.js' },
+      { name: 'jquery-vide-js', path: 'assets/parallex-assets/js/jquery.vide.js' },
+      { name: 'jquery-counterup-js', path: 'assets/parallex-assets/js/jquery.counterup.min.js' },
+      { name: 'jquery-magnific-popup-js', path: 'assets/parallex-assets/js/jquery.magnific-popup.min.js' },
+      { name: 'waypoints-js', path: 'assets/parallex-assets/js/waypoints.min.js' },
+      { name: 'form-validator-js', path: 'assets/parallex-assets/js/form-validator.min.js' },
+      { name: 'contact-form-js', path: 'assets/parallex-assets/js/contact-form-script.js' },
+      { name: 'main-js', path: 'assets/parallex-assets/js/main.js' }
     ];
 
     landingScripts.forEach(script =>
@@ -124,7 +123,7 @@ export class StyleLoaderService
         this.loadedStyles.delete(styleName);
       }
     });
-    this.defaultStylesLoaded = false;
+
   }
 
   private removeDefaultScripts()
@@ -139,35 +138,7 @@ export class StyleLoaderService
         this.loadedScripts.delete(scriptName);
       }
     });
-    this.defaultScriptsLoaded = false;
-  }
 
-  removeLandingStyles()
-  {
-    const landingStyleNames = ['bootstrap-landing', 'lineicons', 'animate', 'tiny-slider', 'main-landing'];
-    landingStyleNames.forEach(styleName =>
-    {
-      const style = this.loadedStyles.get(styleName);
-      if (style && style.parentNode)
-      {
-        style.parentNode.removeChild(style);
-        this.loadedStyles.delete(styleName);
-      }
-    });
-  }
-
-  removeLandingScripts()
-  {
-    const landingScriptNames = ['bootstrap-js', 'wow', 'tiny-slider-js', 'main-js'];
-    landingScriptNames.forEach(scriptName =>
-    {
-      const script = this.loadedScripts.get(scriptName);
-      if (script && script.parentNode)
-      {
-        script.parentNode.removeChild(script);
-        this.loadedScripts.delete(scriptName);
-      }
-    });
   }
 
   // Method to load everything for landing page
@@ -177,17 +148,4 @@ export class StyleLoaderService
     await this.loadLandingPageScripts();
   }
 
-  // Method to clean up landing page assets
-  cleanupLandingPageAssets()
-  {
-    this.removeLandingStyles();
-    this.removeLandingScripts();
-  }
-
-  // Method to restore default app assets
-  restoreDefaultAssets()
-  {
-    this.loadDefaultStyles();
-    this.loadDefaultScripts();
-  }
 }

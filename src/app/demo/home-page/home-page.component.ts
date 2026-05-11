@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import { StyleLoaderService } from '../helpers/style-loader.service';
 
@@ -10,17 +10,20 @@ import { StyleLoaderService } from '../helpers/style-loader.service';
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.scss']
 })
-export class HomePageComponent implements OnInit, OnDestroy
+export class HomePageComponent implements OnInit
 {
   constructor(private styleLoader: StyleLoaderService) { }
 
   async ngOnInit()
   {
-    // Load all landing page assets (CSS + JS)
-    await this.styleLoader.loadLandingPageAssets();
-
-    // Initialize any landing page specific functionality
-    this.initializeLandingPage();
+    try
+    {
+      await this.styleLoader.loadLandingPageAssets();
+      this.initializeLandingPage();
+    } catch (error)
+    {
+      console.error('Failed to load assets:', error);
+    }
   }
 
   private initializeLandingPage()
@@ -51,11 +54,11 @@ export class HomePageComponent implements OnInit, OnDestroy
     }
   }
 
-  ngOnDestroy()
-  {
-    // Clean up landing page assets when leaving
-    this.styleLoader.cleanupLandingPageAssets();
-    // Restore default app assets
-    this.styleLoader.restoreDefaultAssets();
-  }
+  // ngOnDestroy()
+  // {
+  //   // Clean up landing page assets when leaving
+  //  this.styleLoader.cleanupLandingPageAssets();
+  //   // Restore default app assets
+  //   this.styleLoader.restoreDefaultAssets();
+  // }
 }
