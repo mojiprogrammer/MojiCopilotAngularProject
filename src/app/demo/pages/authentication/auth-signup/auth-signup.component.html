@@ -8,63 +8,111 @@
     </div>
     <div class="card">
       <div class="card-body text-center">
-        <form (ngSubmit)="onSubmit($event)">
+        <form (ngSubmit)="onSubmit($event)" [formGroup]="registerForm">
           <div class="mb-4">
             <i class="feather icon-user-plus auth-icon"></i>
           </div>
           <h3 class="mb-4">Sign up</h3>
+
+          <!-- Error Message -->
+          @if (errorMessage()) {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              {{ errorMessage() }}
+              <button type="button" class="btn-close" (click)="errorMessage.set('')"></button>
+            </div>
+          }
+
+          <!-- Username -->
           <div class="input-group mb-3">
             <input
               type="text"
               id="username"
               class="form-control"
               placeholder="Username"
-              [field]="registerForm.username"
-              [class.is-invalid]="submitted() && registerForm.username().errors().length > 0"
+              formControlName="username"
+              [class.is-invalid]="submitted() && username?.invalid && username?.touched"
             />
-            @if (submitted() && registerForm.username().errors().length > 0) {
+            @if (submitted() && username?.invalid && username?.touched) {
               <div class="invalid-feedback">
-                @for (error of registerForm.username().errors(); track error.kind) {
-                  <div>{{ error.message }}</div>
+                @if (username?.errors?.['required']) {
+                  <div>Username is required</div>
+                }
+                @if (username?.errors?.['minlength']) {
+                  <div>Username must be at least 3 characters</div>
                 }
               </div>
             }
           </div>
+
+          <!-- Email -->
           <div class="input-group mb-3">
             <input
               type="email"
               class="form-control"
-              id="floatingInput"
-              [class.is-invalid]="submitted() && registerForm.email().invalid()"
+              id="email"
               placeholder="Email Address"
-              [field]="registerForm.email"
+              formControlName="email"
+              [class.is-invalid]="submitted() && email?.invalid && email?.touched"
             />
-            @if (submitted() && registerForm.email().invalid()) {
+            @if (submitted() && email?.invalid && email?.touched) {
               <div class="invalid-feedback">
-                @for (error of registerForm.email().errors(); track error.kind) {
-                  <div>{{ error.message }}</div>
+                @if (email?.errors?.['required']) {
+                  <div>Email is required</div>
+                }
+                @if (email?.errors?.['email']) {
+                  <div>Please enter a valid email address</div>
                 }
               </div>
             }
           </div>
+
+          <!-- First Name -->
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="firstName"
+              placeholder="First Name"
+              formControlName="firstName"
+              [class.is-invalid]="submitted() && firstName?.invalid && firstName?.touched"
+            />
+            @if (submitted() && firstName?.invalid && firstName?.touched) {
+              <div class="invalid-feedback">
+                First name is required
+              </div>
+            }
+          </div>
+
+          <!-- Last Name -->
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="lastName"
+              placeholder="Last Name"
+              formControlName="lastName"
+            />
+          </div>
+
+          <!-- Password -->
           <div class="input-group mb-4">
             @if (!showPassword()) {
               <input
                 type="password"
                 id="password"
                 class="form-control"
-                [field]="registerForm.password"
-                [class.is-invalid]="submitted() && registerForm.password().errors().length > 0"
+                formControlName="password"
                 placeholder="Password (min. 8 characters)"
+                [class.is-invalid]="submitted() && password?.invalid && password?.touched"
               />
             } @else {
               <input
                 type="text"
                 id="password"
                 class="form-control"
-                [field]="registerForm.password"
-                [class.is-invalid]="submitted() && registerForm.password().errors().length > 0"
+                formControlName="password"
                 placeholder="Password (min. 8 characters)"
+                [class.is-invalid]="submitted() && password?.invalid && password?.touched"
               />
             }
             <i
@@ -72,23 +120,50 @@
               id="togglePassword"
               (click)="togglePasswordVisibility()"
             ></i>
-            @if (submitted() && registerForm.password().errors().length > 0) {
+            @if (submitted() && password?.invalid && password?.touched) {
               <div class="invalid-feedback">
-                @for (error of registerForm.password().errors(); track error.kind) {
-                  <div>{{ error.message }}</div>
+                @if (password?.errors?.['required']) {
+                  <div>Password is required</div>
+                }
+                @if (password?.errors?.['minlength']) {
+                  <div>Password must be at least 8 characters</div>
                 }
               </div>
             }
           </div>
+
+          <!-- Phone (optional) -->
+          <div class="input-group mb-3">
+            <input
+              type="tel"
+              class="form-control"
+              id="phone"
+              placeholder="Phone Number (optional)"
+              formControlName="phone"
+            />
+          </div>
+
+          <!-- Date of Birth (optional) -->
+          <div class="input-group mb-3">
+            <input
+              type="date"
+              class="form-control"
+              id="dateOfBirth"
+              placeholder="Date of Birth"
+              formControlName="dateOfBirth"
+            />
+          </div>
+
+          <!-- Checkboxes -->
           <div class="form-group text-start">
             <div class="checkbox checkbox-fill d-inline">
-              <input type="checkbox" name="checkbox-fill-1" id="checkbox-fill-1" checked="" />
+              <input type="checkbox" formControlName="saveDetails" id="checkbox-fill-1" />
               <label for="checkbox-fill-1" class="cr">Save Details</label>
             </div>
           </div>
           <div class="form-group text-start">
             <div class="checkbox checkbox-fill d-inline">
-              <input type="checkbox" name="checkbox-fill-2" id="checkbox-fill-2" />
+              <input type="checkbox" formControlName="newsletter" id="checkbox-fill-2" />
               <label for="checkbox-fill-2" class="cr">
                 Send me the
                 <a href="javascript:void(0)">Newsletter</a>
@@ -96,11 +171,19 @@
               </label>
             </div>
           </div>
-          <button type="submit" class="btn btn-primary shadow-2 mb-4">Sign up</button>
+
+          <button type="submit" class="btn btn-primary shadow-2 mb-4" [disabled]="isLoading()">
+            @if (isLoading()) {
+              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Registering...
+            } @else {
+              Sign up
+            }
+          </button>
         </form>
         <p class="mb-0 text-muted">
           Already have an account?
-          <a [routerLink]="['/login']">Log in</a>
+           <a [routerLink]="['/login']">Log in</a>
         </p>
       </div>
     </div>
