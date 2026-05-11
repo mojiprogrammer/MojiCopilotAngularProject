@@ -70,13 +70,33 @@
             </div>
           </div>
           <button type="submit" class="btn btn-primary mb-4">Login</button>
-          <p class="mb-2 text-muted">
+
+          <!-- Social Login Section -->
+          <div class="social-login-section">
+            <p class="social-login-divider"><span>or login with</span></p>
+            <div class="social-buttons">
+              <button type="button" class="btn btn-primary" (click)="loginWithGoogle()">
+                <i class="fab fa-google"></i>
+                <span>Google</span>
+              </button>
+              <button type="button" class="btn btn-primary" (click)="loginWithFacebook()">
+                <i class="fab fa-facebook-f"></i>
+                <span>Facebook</span>
+              </button>
+              <button type="button" class="btn btn-primary" (click)="loginWithLinkedIn()">
+                <i class="fab fa-linkedin-in"></i>
+                <span>LinkedIn</span>
+              </button>
+            </div>
+          </div>
+
+          <p class="mb-2 text-muted mt-4">
             Forgot password?
             <a [routerLink]="['#']">Reset</a>
           </p>
         </form>
         <p class="mb-0 text-muted">
-          Don’t have an account?
+          Don't have an account?
           <a [routerLink]="['/register']">Sign up</a>
         </p>
       </div>
