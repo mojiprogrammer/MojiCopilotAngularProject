@@ -1,111 +1,20 @@
-.chat-container {
-  height: 600px;
-  display: flex;
-  flex-direction: column;
+textarea {
+  resize: vertical;
+  min-height: 100px;
 }
 
-.chat-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  min-height: 400px;
-  max-height: 500px;
-}
+.alert {
+  animation: fadeIn 0.5s ease-in;
 
-.message-wrapper {
-  margin-bottom: 1rem;
-  animation: fadeIn 0.3s ease-in;
-}
-
-.message {
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  max-width: 85%;
-  word-wrap: break-word;
-  white-space: pre-wrap;
-
-  &.user {
-    background-color: #007bff;
-    color: white;
-    margin-left: auto;
-    text-align: right;
-
-    .message-header {
-      color: rgba(255, 255, 255, 0.9);
-    }
-  }
-
-  &.assistant {
-    background-color: white;
-    border: 1px solid #dee2e6;
-    margin-right: auto;
-
-    .message-header {
-      color: #28a745;
-    }
-  }
-
-  &.system {
-    background-color: #f8d7da;
-    border: 1px solid #f5c6cb;
-    color: #721c24;
-    margin: 0 auto;
-    text-align: center;
-    max-width: 90%;
-
-    &.error {
-      background-color: #f8d7da;
-      border-color: #f5c6cb;
-    }
-  }
-}
-
-.message-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-  font-size: 0.875rem;
-}
-
-.message-content {
-  line-height: 1.5;
-}
-
-.message-usage {
-  margin-top: 0.5rem;
-  font-size: 0.75rem;
-  opacity: 0.7;
-}
-
-.loading-indicator, .streaming-indicator {
-  display: flex;
-  align-items: center;
-  color: #6c757d;
-}
-
-.chat-input-container {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #dee2e6;
-}
-
-.quick-suggestions {
-  button {
-    font-size: 0.875rem;
-    transition: all 0.2s;
-
-    &:hover {
-      transform: translateY(-1px);
-    }
+  hr {
+    margin: 10px 0;
   }
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
@@ -113,21 +22,10 @@
   }
 }
 
-// Scrollbar styling
-.chat-messages::-webkit-scrollbar {
-  width: 8px;
-}
+.btn {
+  min-width: 100px;
 
-.chat-messages::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
-.chat-messages::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
-}
-
-.chat-messages::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  &:disabled {
+    cursor: not-allowed;
+  }
 }

@@ -1,22 +1,184 @@
-<div class="row">
+<!-- <div class="row">
   <div class="col-sm-12">
     <app-card cardTitle="DeepSeek AI" [options]="false">
 
       <h5 class="mt-5 text-center">Start chatting with DeepSeek</h5>
       <hr />
-      <form class="was-validated">
+
+
+      <form (ngSubmit)="sendMessage()" #chatForm="ngForm">
         <div class="mb-3">
-          <!-- <label for="validationTextarea" class="form-label">Message DeepSeek</label> -->
-          <textarea class="form-control" id="validationTextarea" placeholder="Message DeepSeek" required></textarea>
-          <div class="invalid-feedback">Please enter a message in the text.</div>
+          <textarea
+            class="form-control"
+            id="validationTextarea"
+            placeholder="Message DeepSeek"
+            [(ngModel)]="userMessage"
+            name="userMessage"
+            required
+            rows="4"
+            [disabled]="isLoading">
+          </textarea>
+          <div class="invalid-feedback" *ngIf="!userMessage && userMessage !== ''">
+            Please enter a message in the text.
+          </div>
         </div>
 
         <div class="mb-3">
-          <button class="btn btn-primary" type="submit">Ask</button>
+          <button
+            class="btn btn-primary"
+            type="submit"
+            [disabled]="!userMessage || isLoading">
+            {{ isLoading ? 'Sending...' : 'Ask' }}
+          </button>
+
+          <button
+            *ngIf="response || errorMessage"
+            type="button"
+            class="btn btn-secondary ms-2"
+            (click)="clearForm()">
+            Clear
+          </button>
         </div>
       </form>
 
+
+      <div *ngIf="isLoading" class="alert alert-info mt-3">
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        DeepSeek is thinking...
+      </div>
+
+
+      <div *ngIf="response" class="alert alert-success mt-3">
+        <strong>Response:</strong>
+        <hr />
+        <div>{{ response }}</div>
+      </div>
+
+
+      <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+        <strong>Error:</strong>
+        <hr />
+        <div>{{ errorMessage }}</div>
+      </div>
+
     </app-card>
   </div>
+</div> -->
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="DeepSeek AI" [options]="false">
 
+      <!-- Chat Messages Container -->
+      <div class="chat-container">
+        <div class="chat-messages">
+          <ng-container *ngFor="let message of messages; let i = index">
+            <div class="message-wrapper">
+              <div [class]="'message ' + message.role" [class.error]="message.isError">
+                <div class="message-header">
+                  <strong>{{ message.role === 'user' ? 'You' : (message.role === 'assistant' ? 'DeepSeek AI' : 'System') }}</strong>
+                  <small class="text-muted">{{ message.timestamp | date:'shortTime' }}</small>
+                </div>
+                <div class="message-content">
+                  <!-- <div [innerHTML]="message.content | nl2br"></div> -->
+                  <div *ngIf="message.isStreaming" class="streaming-indicator">
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    DeepSeek is typing...
+                  </div>
+                </div>
+                <div *ngIf="message.usage && !message.isStreaming" class="message-usage small text-muted">
+                  Tokens: {{ message.usage.total_tokens }} (Prompt: {{ message.usage.prompt_tokens }} | Completion: {{ message.usage.completion_tokens }})
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Loading Indicator -->
+          <div *ngIf="isLoading" class="message-wrapper">
+            <div class="message assistant">
+              <div class="message-header">
+                <strong>DeepSeek AI</strong>
+              </div>
+              <div class="message-content">
+                <div class="loading-indicator">
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  Thinking...
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          {{ errorMessage }}
+          <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+        </div>
+
+        <!-- Input Form -->
+        <div class="chat-input-container mt-3">
+          <div class="mb-3">
+            <label for="chatTextarea" class="form-label fw-bold">Your Message</label>
+            <textarea
+              #messageInput
+              id="chatTextarea"
+              class="form-control"
+              [(ngModel)]="userMessage"
+              placeholder="Type your message here... (Ctrl+Enter to send)"
+              rows="3"
+              [disabled]="isLoading || isStreaming"
+              (keydown)="onEnterPress($event)"
+              required>
+            </textarea>
+            <div class="invalid-feedback" *ngIf="false">Please enter a message.</div>
+            <small class="form-text text-muted">
+              Press Enter to send, Ctrl+Enter for new line
+            </small>
+          </div>
+
+          <div class="mb-3 d-flex gap-2">
+            <button class="btn btn-primary" type="button" (click)="sendMessage()" [disabled]="!userMessage.trim() || isLoading || isStreaming">
+              <i class="fas fa-paper-plane me-2"></i>
+              {{ isLoading ? 'Sending...' : (isStreaming ? 'Streaming...' : 'Send') }}
+            </button>
+
+            <button class="btn btn-success" type="button" (click)="sendMessageStream()"
+                    [disabled]="!userMessage.trim() || isLoading || isStreaming">
+              <i class="fas fa-stream me-2"></i>
+              Send (Streaming)
+            </button>
+
+            <button class="btn btn-secondary" type="button" (click)="clearChat()">
+              <i class="fas fa-trash-alt me-2"></i>
+              Clear Chat
+            </button>
+          </div>
+
+          <!-- Quick Suggestions -->
+          <div class="quick-suggestions mt-3">
+            <small class="text-muted d-block mb-2">Quick suggestions:</small>
+            <div class="d-flex flex-wrap gap-2">
+              <button class="btn btn-sm btn-outline-secondary"
+                      (click)="userMessage = 'What is artificial intelligence?'; sendMessage()">
+                What is AI?
+              </button>
+              <button class="btn btn-sm btn-outline-secondary"
+                      (click)="userMessage = 'Explain quantum computing in simple terms'; sendMessage()">
+                Quantum Computing
+              </button>
+              <button class="btn btn-sm btn-outline-secondary"
+                      (click)="userMessage = 'Write a haiku about programming'; sendMessage()">
+                Haiku about code
+              </button>
+              <button class="btn btn-sm btn-outline-secondary"
+                      (click)="userMessage = 'What are the best practices for Angular development?'; sendMessage()">
+                Angular best practices
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </app-card>
+  </div>
 </div>

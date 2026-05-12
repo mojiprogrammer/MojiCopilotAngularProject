@@ -1,17 +1,23 @@
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { Subscription } from 'rxjs';
 import { SharedModule } from '../../../theme/shared/shared.module';
 
 @Component({
   selector: 'app-form-element',
-  imports: [SharedModule, NgbDropdownModule, FormsModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule, SharedModule, NgbDropdownModule],
   templateUrl: './form-element.html',
   styleUrl: './form-element.scss'
 })
 export class FormElement
 {
+  @ViewChild('messageInput') messageInput!: ElementRef;
+
   // Properties
   userMessage: string = '';
   messages: ChatMessage[] = [];
@@ -20,8 +26,9 @@ export class FormElement
   currentStreamingMessage: string = '';
   errorMessage: string = '';
 
-  private apiUrl = 'https://localhost:5864/api/DeepSeekAPI';
-
+  // API URLs (adjust based on your backend URL)
+  private apiUrl = 'https://localhost:5864/api/DeepSeekAPI'; // Changed to match controller name
+  private httpSubscription?: Subscription;
   constructor(private http: HttpClient)
   {
     // Add welcome message
@@ -32,8 +39,9 @@ export class FormElement
     });
   }
 
+
   // Send message to API (non-streaming)
-  async sendMessage()
+  sendMessage()
   {
     if (!this.userMessage.trim())
     {
@@ -53,49 +61,46 @@ export class FormElement
     this.isLoading = true;
     this.errorMessage = '';
 
-    try
-    {
-      const request: DeepSeekChatRequest = {
-        messages: [
-          ...this.messages.filter(m => m.role !== 'assistant' || m.content !== this.getWelcomeMessage()).map(m => ({
-            role: m.role,
-            content: m.content
-          })),
-          { role: 'user', content: currentMessage }
-        ],
-        temperature: 0.7,
-        maxTokens: 2000
-      };
+    const request: DeepSeekChatRequest = {
+      messages: this.messages.filter(m => m.role !== 'system').map(m => ({
+        role: m.role,
+        content: m.content
+      })),
+      temperature: 0.7,
+      maxTokens: 2000
+    };
 
-      const response = await this.http.post<any>(`${ this.apiUrl }/chat`, request).toPromise();
+    this.http.post<any>(`${ this.apiUrl }/chat`, request).subscribe({
+      next: (response) =>
+      {
+        // Add assistant response
+        const assistantMsg: ChatMessage = {
+          role: 'assistant',
+          content: response.message,
+          timestamp: new Date(),
+          usage: response.usage
+        };
+        this.messages.push(assistantMsg);
+        this.isLoading = false;
+        this.scrollToBottom();
+      },
+      error: (error) =>
+      {
+        console.error('Error sending message:', error);
+        this.errorMessage = error.error?.error || 'Failed to get response from DeepSeek';
 
-      // Add assistant response
-      const assistantMsg: ChatMessage = {
-        role: 'assistant',
-        content: response.message,
-        timestamp: new Date(),
-        usage: response.usage
-      };
-      this.messages.push(assistantMsg);
-
-    } catch (error: any)
-    {
-      console.error('Error sending message:', error);
-      this.errorMessage = error.error?.error || 'Failed to get response from DeepSeek';
-
-      // Add error message to chat
-      const errorMsg: ChatMessage = {
-        role: 'system',
-        content: `Error: ${ this.errorMessage }`,
-        timestamp: new Date(),
-        isError: true
-      };
-      this.messages.push(errorMsg);
-    } finally
-    {
-      this.isLoading = false;
-      this.scrollToBottom();
-    }
+        // Add error message to chat
+        const errorMsg: ChatMessage = {
+          role: 'system',
+          content: `Error: ${ this.errorMessage }`,
+          timestamp: new Date(),
+          isError: true
+        };
+        this.messages.push(errorMsg);
+        this.isLoading = false;
+        this.scrollToBottom();
+      }
+    });
   }
 
   // Send message with streaming
@@ -128,17 +133,15 @@ export class FormElement
       isStreaming: true
     };
     this.messages.push(streamingPlaceholder);
+    this.scrollToBottom();
 
     try
     {
-      // Use EventSource for SSE or fetch API for streaming
       const request: DeepSeekChatRequest = {
-        messages: [
-          ...this.messages.filter(m => m.role !== 'assistant' || m !== streamingPlaceholder).map(m => ({
-            role: m.role,
-            content: m.content
-          }))
-        ],
+        messages: this.messages.filter(m => m !== streamingPlaceholder && m.role !== 'system').map(m => ({
+          role: m.role,
+          content: m.content
+        })),
         temperature: 0.7,
         maxTokens: 2000,
         stream: true
@@ -175,7 +178,6 @@ export class FormElement
               const data = line.substring(6);
               if (data === '[DONE]')
               {
-                // Streaming complete
                 streamingPlaceholder.isStreaming = false;
                 break;
               }
@@ -196,9 +198,8 @@ export class FormElement
         }
       }
 
-      // Clean up
       streamingPlaceholder.isStreaming = false;
-      if (streamingPlaceholder.content === '')
+      if (!streamingPlaceholder.content)
       {
         streamingPlaceholder.content = 'No response received';
       }
@@ -208,7 +209,6 @@ export class FormElement
       console.error('Error in streaming:', error);
       this.errorMessage = error.message || 'Failed to get streaming response';
 
-      // Update the placeholder with error
       streamingPlaceholder.content = `Error: ${ this.errorMessage }`;
       streamingPlaceholder.isError = true;
       streamingPlaceholder.isStreaming = false;
@@ -230,12 +230,7 @@ export class FormElement
       timestamp: new Date()
     });
     this.errorMessage = '';
-  }
-
-  // Get welcome message
-  private getWelcomeMessage(): string
-  {
-    return 'Hello! I am DeepSeek AI. How can I help you today?';
+    this.scrollToBottom();
   }
 
   // Scroll to bottom of chat
@@ -254,10 +249,13 @@ export class FormElement
   // Handle enter key press
   onEnterPress(event: KeyboardEvent)
   {
-    if (event.ctrlKey || event.metaKey)
+    if (event.ctrlKey || event.key === 'Enter')
     {
-      event.preventDefault();
-      this.sendMessage();
+      if (!event.shiftKey)
+      {
+        event.preventDefault();
+        this.sendMessage();
+      }
     }
   }
 }
