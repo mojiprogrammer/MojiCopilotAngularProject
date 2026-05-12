@@ -11,7 +11,7 @@ export class StyleLoaderService
   loadLandingPageStyles()
   {
     // Remove default styles first
-    this.removeDefaultStyles();
+    // this.removeDefaultStyles();
 
     // Load landing page styles
     const landingStyles = [
@@ -38,7 +38,7 @@ export class StyleLoaderService
   loadLandingPageScripts()
   {
     // Remove default scripts first
-    this.removeDefaultScripts();
+    //this.removeDefaultScripts();
 
     // Load landing page JavaScript files
     const landingScripts = [
@@ -111,35 +111,35 @@ export class StyleLoaderService
     });
   }
 
-  private removeDefaultStyles()
-  {
-    const defaultStyles = ['bootstrap', 'app-styles'];
-    defaultStyles.forEach(styleName =>
-    {
-      const style = this.loadedStyles.get(styleName);
-      if (style && style.parentNode)
-      {
-        style.parentNode.removeChild(style);
-        this.loadedStyles.delete(styleName);
-      }
-    });
+  // private removeDefaultStyles()
+  // {
+  //   const defaultStyles = ['bootstrap', 'app-styles'];
+  //   defaultStyles.forEach(styleName =>
+  //   {
+  //     const style = this.loadedStyles.get(styleName);
+  //     if (style && style.parentNode)
+  //     {
+  //       style.parentNode.removeChild(style);
+  //       this.loadedStyles.delete(styleName);
+  //     }
+  //   });
 
-  }
+  // }
 
-  private removeDefaultScripts()
-  {
-    const defaultScripts = ['apexcharts'];
-    defaultScripts.forEach(scriptName =>
-    {
-      const script = this.loadedScripts.get(scriptName);
-      if (script && script.parentNode)
-      {
-        script.parentNode.removeChild(script);
-        this.loadedScripts.delete(scriptName);
-      }
-    });
+  // private removeDefaultScripts()
+  // {
+  //   const defaultScripts = ['apexcharts'];
+  //   defaultScripts.forEach(scriptName =>
+  //   {
+  //     const script = this.loadedScripts.get(scriptName);
+  //     if (script && script.parentNode)
+  //     {
+  //       script.parentNode.removeChild(script);
+  //       this.loadedScripts.delete(scriptName);
+  //     }
+  //   });
 
-  }
+  // }
 
   // Method to load everything for landing page
   async loadLandingPageAssets()

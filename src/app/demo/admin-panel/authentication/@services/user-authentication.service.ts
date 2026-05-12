@@ -10,7 +10,7 @@ import { LoginRequestDto, RegisterLoginRequest, RegisterLoginResponse } from '..
 })
 export class AuthService implements IAuthService
 {
-  private readonly serviceUrl = 'https://localhost:7169';
+  private readonly serviceUrl = 'https://localhost:5864';
 
   constructor(private http: HttpClient) { }
 

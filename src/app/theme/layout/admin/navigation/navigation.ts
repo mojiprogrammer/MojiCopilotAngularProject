@@ -1,4 +1,5 @@
-export interface NavigationItem {
+export interface NavigationItem
+{
   id: string;
   title: string;
   type: 'item' | 'collapse' | 'group';
@@ -84,13 +85,13 @@ export const NavigationItems: NavigationItem[] = [
   },
   {
     id: 'forms',
-    title: 'Forms & Tables',
+    title: 'AI Engines',
     type: 'group',
     icon: 'icon-group',
     children: [
       {
         id: 'forms-element',
-        title: 'Form Elements',
+        title: 'DeepSeek',
         type: 'item',
         url: '/forms',
         classes: 'nav-item',
