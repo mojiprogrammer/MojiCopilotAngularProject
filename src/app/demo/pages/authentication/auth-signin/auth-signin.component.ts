@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, NgZone, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, NgZone, OnDestroy, OnInit, signal } from '@angular/core';
 import { email, Field, form, minLength, required } from '@angular/forms/signals';
 import { Router, RouterModule } from '@angular/router';
 import { SharedModule } from '../../../../theme/shared/shared.module';
+import { LoginRequestDto } from '../../../admin-panel/authentication/@intermediate/models/user-authentication.model';
+import { AuthService } from '../../../admin-panel/authentication/@services/user-authentication.service';
 // ... your other imports
 
 @Component({
@@ -11,12 +13,12 @@ import { SharedModule } from '../../../../theme/shared/shared.module';
   templateUrl: './auth-signin.component.html',
   styleUrls: ['./auth-signin.component.scss']
 })
-export class AuthSigninComponent
+export class AuthSigninComponent implements OnInit, OnDestroy
 {
   private cd = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
   private router = inject(Router);
-
+  private authService = inject(AuthService);
   submitted = signal(false);
   error = signal('');
   showPassword = signal(false);
@@ -31,7 +33,7 @@ export class AuthSigninComponent
     scope: 'mojtaba.tavakoli2@gmail.com'
   };
 
-  loginModal = signal<{ email: string; password: string; }>({
+  loginModal = signal<LoginRequestDto>({
     email: '',
     password: ''
   });
@@ -43,15 +45,94 @@ export class AuthSigninComponent
     required(schemaPath.password, { message: 'Password is required' });
     minLength(schemaPath.password, 8, { message: 'Password must be at least 8 characters' });
   });
-
-  onSubmit(event: Event)
+  ngOnInit(): void
   {
+    // Check if user is already logged in
+    const token = localStorage.getItem('auth_token');
+    if (token)
+    {
+      this.router.navigate(['/dashboard']);
+    }
+  }
+  async onSubmit(event: Event)
+  {
+    event.preventDefault();
     this.submitted.set(true);
     this.error.set('');
-    event.preventDefault();
-    const credentials = this.loginModal();
-    console.log('login user logged in with:', credentials);
+
+    // Validate form
+    if (this.loginForm.email().invalid() || this.loginForm.password().invalid())
+    {
+      this.cd.detectChanges();
+      return;
+    }
+
+    const credentials: LoginRequestDto = {
+      email: this.loginModal().email,
+      password: this.loginModal().password
+    };
+
+    console.log('Logging in user with:', credentials.email);
+    this.isLoading.set(true);
     this.cd.detectChanges();
+
+    try
+    {
+      const response = await this.authService.LoginAsync(credentials).toPromise();
+
+      if (response)
+      {
+        // Store tokens and user data
+        if (response.AccessToken)
+        {
+          localStorage.setItem('auth_token', response.AccessToken);
+        }
+        if (response.RefreshToken)
+        {
+          localStorage.setItem('refresh_token', response.RefreshToken.toString());
+        }
+
+        // Store user info
+        // const userInfo = {
+        //   userId: response.UserId,
+        //   email: response.Email,
+        //   username: response.Username,
+        //   message: response.Message
+        // };
+        // localStorage.setItem('user', JSON.stringify(userInfo));
+
+        console.log('Login successful:', response.Message);
+
+        // Navigate to dashboard or home page
+        this.router.navigate(['/dashboard']);
+      } else
+      {
+        this.error.set(response?.Message || 'Login failed. Please check your credentials.');
+        this.isLoading.set(false);
+        this.cd.detectChanges();
+      }
+    } catch (error: any)
+    {
+      console.error('Login error:', error);
+
+      // Handle different error scenarios
+      if (error.status === 401)
+      {
+        this.error.set('Invalid email or password. Please try again.');
+      } else if (error.status === 400)
+      {
+        this.error.set('Invalid login data. Please check your input.');
+      } else if (error.status === 500)
+      {
+        this.error.set('Server error. Please try again later.');
+      } else
+      {
+        this.error.set(error.message || 'An unexpected error occurred during login.');
+      }
+
+      this.isLoading.set(false);
+      this.cd.detectChanges();
+    }
   }
 
   togglePasswordVisibility()

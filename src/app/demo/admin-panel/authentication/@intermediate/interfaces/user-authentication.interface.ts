@@ -1,7 +1,8 @@
 import { Observable } from "rxjs";
-import { RegisterLoginRequest, RegisterLoginResponse } from "../models/user-authentication.model";
+import { LoginRequestDto, RegisterLoginRequest, RegisterLoginResponse } from "../models/user-authentication.model";
 
 export interface IAuthService
 {
-  RegisterAndLoginAsync(request: RegisterLoginRequest): Observable<RegisterLoginResponse>;
+  RegisterAsync(request: RegisterLoginRequest): Observable<RegisterLoginResponse>;
+  LoginAsync(request: LoginRequestDto): Observable<RegisterLoginResponse>;
 }

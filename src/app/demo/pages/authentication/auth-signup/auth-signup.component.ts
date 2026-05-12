@@ -87,7 +87,7 @@ export class AuthSignupComponent
       DateOfBirth: this.registerForm.value.dateOfBirth ? new Date(this.registerForm.value.dateOfBirth) : new Date()
     };
 
-    this.authService.RegisterAndLoginAsync(request).subscribe({
+    this.authService.RegisterAsync(request).subscribe({
       next: (response: RegisterLoginResponse) =>
       {
         this.isLoading.set(false);

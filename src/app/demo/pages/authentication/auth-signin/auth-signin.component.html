@@ -8,11 +8,29 @@
     </div>
     <div class="card">
       <div class="card-body text-center">
+        <!-- Show loading overlay -->
+        @if (isLoading()) {
+          <div class="loading-overlay">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        }
+
         <form (ngSubmit)="onSubmit($event)">
           <div class="mb-4">
             <i class="feather icon-unlock auth-icon"></i>
           </div>
           <h3 class="mb-4">Login</h3>
+
+          <!-- Show error message -->
+          @if (error()) {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              {{ error() }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" (click)="error.set('')"></button>
+            </div>
+          }
+
           <div class="input-group mb-3">
             <input
               type="email"
@@ -21,6 +39,7 @@
               [class.is-invalid]="submitted() && loginForm.email().invalid()"
               placeholder="Email Address"
               [field]="loginForm.email"
+
             />
             @if (submitted() && loginForm.email().invalid()) {
               <div class="invalid-feedback">
@@ -30,6 +49,7 @@
               </div>
             }
           </div>
+
           <div class="input-group mb-4">
             @if (!showPassword()) {
               <input
@@ -39,6 +59,7 @@
                 [field]="loginForm.password"
                 [class.is-invalid]="submitted() && loginForm.password().errors().length > 0"
                 placeholder="Password (min. 8 characters)"
+
               />
             } @else {
               <input
@@ -48,12 +69,14 @@
                 [field]="loginForm.password"
                 [class.is-invalid]="submitted() && loginForm.password().errors().length > 0"
                 placeholder="Password (min. 8 characters)"
+
               />
             }
             <i
               [ngClass]="showPassword() ? 'feather icon-eye' : 'feather icon-eye-off'"
               id="togglePassword"
               (click)="togglePasswordVisibility()"
+              [style.cursor]="'pointer'"
             ></i>
             @if (submitted() && loginForm.password().errors().length > 0) {
               <div class="invalid-feedback">
@@ -63,27 +86,34 @@
               </div>
             }
           </div>
+
           <div class="form-group text-start">
             <div class="checkbox checkbox-fill d-inline">
-              <input type="checkbox" name="checkbox-fill-1" id="checkbox-fill-a1" checked="" />
+              <input type="checkbox" name="checkbox-fill-1" id="checkbox-fill-a1" [disabled]="isLoading()" />
               <label for="checkbox-fill-a1" class="cr">Save Details</label>
             </div>
           </div>
-          <button type="submit" class="btn btn-primary mb-4">Login</button>
+
+          <button type="submit" class="btn btn-primary mb-4" [disabled]="isLoading()">
+            @if (isLoading()) {
+              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            }
+            Login
+          </button>
 
           <!-- Social Login Section -->
           <div class="social-login-section">
             <p class="social-login-divider"><span>or login with</span></p>
             <div class="social-buttons">
-              <button type="button" class="btn btn-primary" >
+              <button type="button" class="btn btn-primary" [disabled]="isLoading()">
                 <i class="fab fa-google"></i>
                 <span>Google</span>
               </button>
-              <button type="button" class="btn btn-primary" >
+              <button type="button" class="btn btn-primary" [disabled]="isLoading()">
                 <i class="fab fa-facebook-f"></i>
                 <span>Facebook</span>
               </button>
-              <button type="button" class="btn btn-primary" (click)="loginWithLinkedIn()">
+              <button type="button" class="btn btn-primary" (click)="loginWithLinkedIn()" [disabled]="isLoading()">
                 <i class="fab fa-linkedin-in"></i>
                 <span>LinkedIn</span>
               </button>
@@ -92,7 +122,7 @@
 
           <p class="mb-2 text-muted mt-4">
             Forgot password?
-            <a [routerLink]="['#']">Reset</a>
+            <a [routerLink]="['/forgot-password']">Reset</a>
           </p>
         </form>
         <p class="mb-0 text-muted">

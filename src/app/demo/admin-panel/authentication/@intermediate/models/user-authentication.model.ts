@@ -21,6 +21,6 @@ export class RegisterLoginResponse
 }
 export class LoginRequestDto
 {
-  public Email: string;
-  public Password: string;
+  public email: string;
+  public password: string;
 }
