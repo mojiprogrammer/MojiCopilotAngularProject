@@ -19,5 +19,8 @@ export class RegisterLoginResponse
   public AccessToken: string;
   public RefreshToken: Date;
 }
-
-
+export class LoginRequestDto
+{
+  public Email: string;
+  public Password: string;
+}

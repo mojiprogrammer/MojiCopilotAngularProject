@@ -26,6 +26,7 @@ export class AuthSigninComponent
   private readonly LINKEDIN_CONFIG = {
     clientId: '78ji4d08mq5npx',
     authUrl: 'https://www.linkedin.com/oauth/v2/authorization',
+    //https://www.linkedin.com/developers/apps/verification/bf025b27-76cf-44f2-9b56-9a042fb35906
     redirectUri: 'http://localhost:4200/home-page',
     scope: 'mojtaba.tavakoli2@gmail.com'
   };
@@ -58,8 +59,6 @@ export class AuthSigninComponent
     this.showPassword.set(!this.showPassword());
   }
 
-  // ==================== LINKEDIN LOGIN ====================
-
   loginWithLinkedIn(): void
   {
     console.log('Initiating LinkedIn login...');
@@ -81,13 +80,11 @@ export class AuthSigninComponent
 
     console.log('LinkedIn Auth URL:', authUrl);
 
-    // Open LinkedIn login in a popup
     this.openLinkedInPopup(authUrl);
   }
 
   private openLinkedInPopup(authUrl: string): void
   {
-    // Calculate popup dimensions
     const width = 600;
     const height = 700;
     const left = (window.screen.width - width) / 2;
@@ -106,11 +103,9 @@ export class AuthSigninComponent
       status=no
     `;
 
-    // Show loading state
     this.isLoading.set(true);
     this.cd.detectChanges();
 
-    // Open the popup
     const popup = window.open(authUrl, 'LinkedIn OAuth', windowFeatures);
 
     if (!popup)
@@ -121,7 +116,6 @@ export class AuthSigninComponent
       return;
     }
 
-    // Monitor the popup for OAuth callback
     this.ngZone.runOutsideAngular(() =>
     {
       const popupCheckInterval = setInterval(() =>
@@ -140,7 +134,6 @@ export class AuthSigninComponent
             return;
           }
 
-          // Check if popup has been redirected to our callback URL
           if (popup.location.href.includes('/auth/callback'))
           {
             const urlParams = new URLSearchParams(popup.location.search);
@@ -163,7 +156,6 @@ export class AuthSigninComponent
                 return;
               }
 
-              // Verify state to prevent CSRF
               const savedState = sessionStorage.getItem('linkedin_oauth_state');
               if (returnedState !== savedState)
               {
@@ -192,8 +184,7 @@ export class AuthSigninComponent
           }
         } catch (e)
         {
-          // Cross-origin error when popup is on LinkedIn's domain - this is expected
-          // Continue checking until popup redirects to our domain
+          console.log(e);
         }
       }, 500);
     });
@@ -203,9 +194,6 @@ export class AuthSigninComponent
   {
     try
     {
-      console.log('Exchanging LinkedIn code for token...');
-
-      // Send the authorization code to your backend
       const response = await fetch('/api/auth/linkedin/callback', {
         method: 'POST',
         headers: {
@@ -225,9 +213,6 @@ export class AuthSigninComponent
 
       const data = await response.json();
 
-      console.log('LinkedIn login successful:', data);
-
-      // Store authentication data
       if (data.token)
       {
         localStorage.setItem('auth_token', data.token);
@@ -236,8 +221,6 @@ export class AuthSigninComponent
       {
         localStorage.setItem('user', JSON.stringify(data.user));
       }
-
-      // Navigate to dashboard or home page
       this.router.navigate(['/dashboard']);
 
     } catch (err: any)
@@ -248,10 +231,6 @@ export class AuthSigninComponent
       this.cd.detectChanges();
     }
   }
-
-  // Add other social login methods if needed
-  // loginWithGoogle() { ... }
-  // loginWithFacebook() { ... }
 
   private generateRandomString(length: number): string
   {
