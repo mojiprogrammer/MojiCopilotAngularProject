@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IAuthService } from '../@intermediate/interfaces/user-authentication.interface';
-import { LoginRequestDto, RegisterLoginRequest, RegisterLoginResponse } from '../@intermediate/models/user-authentication.model';
+import { LoginRequest, LoginResponse, RegisterLoginRequest, RegisterLoginResponse } from '../@intermediate/models/user-authentication.model';
 
 
 @Injectable({
@@ -19,9 +19,9 @@ export class AuthService implements IAuthService
     const apiUrl = `${ this.serviceUrl }/api/Auth/Register`;
     return this.http.post<RegisterLoginResponse>(apiUrl, request);
   }
-  LoginAsync(request: LoginRequestDto): Observable<RegisterLoginResponse>
+  UserLoginAsync(request: LoginRequest): Observable<LoginResponse>
   {
-    const apiUrl = `${ this.serviceUrl }/api/Auth/Login`;
-    return this.http.post<RegisterLoginResponse>(apiUrl, request);
+    const apiUrl = `${ this.serviceUrl }/api/Auth/UserLogin`;
+    return this.http.post<LoginResponse>(apiUrl, request);
   }
 }

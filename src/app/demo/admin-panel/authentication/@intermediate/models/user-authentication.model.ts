@@ -19,8 +19,34 @@ export class RegisterLoginResponse
   public AccessToken: string;
   public RefreshToken: Date;
 }
-export class LoginRequestDto
+export class LoginRequest
 {
-  public email: string;
-  public password: string;
+  public EmailOrUserName: string;
+  public Password: string;
+  public DeviceInfo?: string;
+  public IpAddress?: string;
 }
+
+export class LoginResponse
+{
+  public Success: boolean;
+  public Message: string;
+  public AccessToken?: string;
+  public RefreshToken?: string;
+  public UserInfo?: UserInfoDto;
+  public AccessTokenExpiry?: string;
+}
+
+export class UserInfoDto
+{
+  public UserId: number;
+  public Email: string;
+  public Username?: string;
+  public FirstName?: string;
+  public LastName?: string;
+  public FullName?: string;
+  public IsVerified?: boolean;
+  public LanguageCode?: string;
+  public Timezone?: string;
+}
+

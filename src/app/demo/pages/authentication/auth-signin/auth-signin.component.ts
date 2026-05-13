@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, inject, NgZone, OnDestroy, OnInit, signal
 import { email, Field, form, minLength, required } from '@angular/forms/signals';
 import { Router, RouterModule } from '@angular/router';
 import { SharedModule } from '../../../../theme/shared/shared.module';
-import { LoginRequestDto } from '../../../admin-panel/authentication/@intermediate/models/user-authentication.model';
+import { LoginRequest } from '../../../admin-panel/authentication/@intermediate/models/user-authentication.model';
 import { AuthService } from '../../../admin-panel/authentication/@services/user-authentication.service';
 // ... your other imports
 
@@ -33,17 +33,19 @@ export class AuthSigninComponent implements OnInit, OnDestroy
     scope: 'mojtaba.tavakoli2@gmail.com'
   };
 
-  loginModal = signal<LoginRequestDto>({
-    email: '',
-    password: ''
+  loginModal = signal<LoginRequest>({
+    EmailOrUserName: '',
+    Password: '',
+    DeviceInfo: '',
+    IpAddress: ''
   });
 
   loginForm = form(this.loginModal, (schemaPath) =>
   {
-    required(schemaPath.email, { message: 'Email is required' });
-    email(schemaPath.email, { message: 'Enter a valid email address' });
-    required(schemaPath.password, { message: 'Password is required' });
-    minLength(schemaPath.password, 8, { message: 'Password must be at least 8 characters' });
+    required(schemaPath.EmailOrUserName, { message: 'Email is required' });
+    email(schemaPath.EmailOrUserName, { message: 'Enter a valid email address' });
+    required(schemaPath.Password, { message: 'Password is required' });
+    minLength(schemaPath.Password, 8, { message: 'Password must be at least 8 characters' });
   });
   ngOnInit(): void
   {
@@ -61,24 +63,23 @@ export class AuthSigninComponent implements OnInit, OnDestroy
     this.error.set('');
 
     // Validate form
-    if (this.loginForm.email().invalid() || this.loginForm.password().invalid())
+    if (this.loginForm.EmailOrUserName().invalid() || this.loginForm.Password().invalid())
     {
       this.cd.detectChanges();
       return;
     }
 
-    const credentials: LoginRequestDto = {
-      email: this.loginModal().email,
-      password: this.loginModal().password
+    const credentials: LoginRequest = {
+      EmailOrUserName: this.loginModal().EmailOrUserName,
+      Password: this.loginModal().Password
     };
 
-    console.log('Logging in user with:', credentials.email);
     this.isLoading.set(true);
     this.cd.detectChanges();
 
     try
     {
-      const response = await this.authService.LoginAsync(credentials).toPromise();
+      const response = await this.authService.UserLoginAsync(credentials).toPromise();
 
       if (response)
       {
@@ -92,18 +93,6 @@ export class AuthSigninComponent implements OnInit, OnDestroy
           localStorage.setItem('refresh_token', response.RefreshToken.toString());
         }
 
-        // Store user info
-        // const userInfo = {
-        //   userId: response.UserId,
-        //   email: response.Email,
-        //   username: response.Username,
-        //   message: response.Message
-        // };
-        // localStorage.setItem('user', JSON.stringify(userInfo));
-
-        console.log('Login successful:', response.Message);
-
-        // Navigate to dashboard or home page
         this.router.navigate(['/dashboard']);
       } else
       {
@@ -113,7 +102,7 @@ export class AuthSigninComponent implements OnInit, OnDestroy
       }
     } catch (error: any)
     {
-      console.error('Login error:', error);
+
 
       // Handle different error scenarios
       if (error.status === 401)

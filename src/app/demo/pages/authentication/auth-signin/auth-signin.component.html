@@ -36,12 +36,12 @@
               type="email"
               class="form-control"
               id="floatingInput"
-              [class.is-invalid]="submitted() && loginForm.email().invalid()"
+              [class.is-invalid]="submitted() && loginForm.EmailOrUserName().invalid()"
               placeholder="Email Address"
-              [field]="loginForm.email"
+              [field]="loginForm.EmailOrUserName"
 
             />
-            @if (submitted() && loginForm.email().invalid()) {
+            @if (submitted() && loginForm.EmailOrUserName().invalid()) {
               <div class="invalid-feedback">
                 @for (error of loginForm.email().errors(); track error.kind) {
                   <div>{{ error.message }}</div>
@@ -56,8 +56,8 @@
                 type="password"
                 id="password"
                 class="form-control"
-                [field]="loginForm.password"
-                [class.is-invalid]="submitted() && loginForm.password().errors().length > 0"
+                [field]="loginForm.Password"
+                [class.is-invalid]="submitted() && loginForm.Password().errors().length > 0"
                 placeholder="Password (min. 8 characters)"
 
               />
@@ -66,8 +66,8 @@
                 type="text"
                 id="password"
                 class="form-control"
-                [field]="loginForm.password"
-                [class.is-invalid]="submitted() && loginForm.password().errors().length > 0"
+                [field]="loginForm.Password"
+                [class.is-invalid]="submitted() && loginForm.Password().errors().length > 0"
                 placeholder="Password (min. 8 characters)"
 
               />
@@ -78,9 +78,9 @@
               (click)="togglePasswordVisibility()"
               [style.cursor]="'pointer'"
             ></i>
-            @if (submitted() && loginForm.password().errors().length > 0) {
+            @if (submitted() && loginForm.Password().errors().length > 0) {
               <div class="invalid-feedback">
-                @for (error of loginForm.password().errors(); track error.kind) {
+                @for (error of loginForm.Password().errors(); track error.kind) {
                   <div>{{ error.message }}</div>
                 }
               </div>
@@ -90,7 +90,7 @@
           <div class="form-group text-start">
             <div class="checkbox checkbox-fill d-inline">
               <input type="checkbox" name="checkbox-fill-1" id="checkbox-fill-a1" [disabled]="isLoading()" />
-              <label for="checkbox-fill-a1" class="cr">Save Details</label>
+              <label for="checkbox-fill-a1" class="cr">Remember Me</label>
             </div>
           </div>
 
@@ -122,12 +122,12 @@
 
           <p class="mb-2 text-muted mt-4">
             Forgot password?
-            <a [routerLink]="['/forgot-password']">Reset</a>
+            <a [routerLink]="['/auth/forgot-password']">Reset</a>
           </p>
         </form>
         <p class="mb-0 text-muted">
           Don't have an account?
-          <a [routerLink]="['/register']">Sign up</a>
+          <a [routerLink]="['/auth/register']">Sign up</a>
         </p>
       </div>
     </div>
