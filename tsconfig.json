@@ -1,4 +1,4 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
+
 {
   "compileOnSave": false,
   "compilerOptions": {
@@ -18,10 +18,10 @@
     "moduleResolution": "bundler",
     "importHelpers": true,
     "skipLibCheck": true,
-    "target": "es2022", // this will auto target to latest by angular cli
+    "target": "es2022",
     "module": "es2022",
     "lib": [
-      "es2020", // // this will auto target to latest by angular cli
+      "es2020",
       "dom"
     ],
     "typeRoots": ["node_modules/@types"]
