@@ -1,7 +1,9 @@
 <ul class="navbar-nav">
   <li>
     <div class="dropdown" ngbDropdown placement="auto">
-      <a ngbDropdownToggle href="javascript:void(0)" data-toggle="dropdown"><i class="icon feather icon-bell"></i></a>
+      <a ngbDropdownToggle href="javascript:void(0)" data-toggle="dropdown">
+        <i class="icon feather icon-bell"></i>
+      </a>
       <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end notification">
         <div class="notification-head">
           <h6 class="d-inline-block m-b-0">Notifications</h6>
@@ -16,10 +18,10 @@
           </li>
           <li class="notification">
             <div class="d-flex">
-              <img class="img-radius" src="assets/images/user/mojianimation.png" alt="Generic placeholder image" />
+              <img class="img-radius" [src]="userProfileImage" alt="User profile image" />
               <div class="flex-grow-1">
                 <p>
-                  <strong>Mojtaba Tavakoli</strong>
+                  <strong>{{ isLoading ? 'Loading...' : userFullName }}</strong>
                   <span class="n-time text-muted">
                     <i class="icon feather icon-clock m-r-10"></i>
                     now
@@ -76,33 +78,33 @@
       </a>
       <div class="dropdown-menu dropdown-menu-end profile-notification" ngbDropdownMenu>
         <div class="pro-head">
-          <img src="assets/images/user/mojianimation.png" class="img-radius" alt="User-Profile-Image" />
-          <span>Mojtaba Tavakoli</span>
-          <a href="/auth/login" class="dud-logout" title="Logout">
+          <img [src]="userProfileImage" class="img-radius" alt="User-Profile-Image" />
+          <span>{{ isLoading ? 'Loading...' : userFullName }}</span>
+          <a href="javascript:void(0)" class="dud-logout" title="Logout" (click)="logout()">
             <i class="feather icon-log-out"></i>
           </a>
         </div>
         <ul class="pro-body">
           <li>
-            <a href="javascript:void(0)" class="dropdown-item">
+            <a href="javascript:void(0)" class="dropdown-item" [href]="['/settings']">
               <i class="feather icon-settings"></i>
               Settings
             </a>
           </li>
           <li>
-            <a href="javascript:void(0)" class="dropdown-item">
+            <a href="javascript:void(0)" class="dropdown-item" [href]="['/profile']">
               <i class="feather icon-user"></i>
               Profile
             </a>
           </li>
           <li>
-            <a href="javascript:void(0)" class="dropdown-item">
+            <a href="javascript:void(0)" class="dropdown-item" [href]="['/messages']">
               <i class="feather icon-mail"></i>
               My Messages
             </a>
           </li>
           <li>
-            <a href="javascript:void(0)" class="dropdown-item">
+            <a href="javascript:void(0)" class="dropdown-item" [href]="['/lock-screen']">
               <i class="feather icon-lock"></i>
               Lock Screen
             </a>

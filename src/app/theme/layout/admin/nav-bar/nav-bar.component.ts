@@ -1,9 +1,7 @@
 // angular import
+import { CommonModule } from '@angular/common';
 import { Component, output } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
-
-// project import
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import { NavLeftComponent } from './nav-left/nav-left.component';
 import { NavRightComponent } from './nav-right/nav-right.component';
@@ -14,7 +12,8 @@ import { NavRightComponent } from './nav-right/nav-right.component';
   templateUrl: './nav-bar.component.html',
   styleUrls: ['./nav-bar.component.scss']
 })
-export class NavBarComponent {
+export class NavBarComponent
+{
   // public props
   readonly NavCollapsedMob = output();
   navCollapsedMob;
@@ -23,7 +22,8 @@ export class NavBarComponent {
   collapseStyle: string;
 
   // constructor
-  constructor() {
+  constructor()
+  {
     this.navCollapsedMob = false;
     this.headerStyle = '';
     this.menuClass = false;
@@ -31,21 +31,26 @@ export class NavBarComponent {
   }
 
   // public method
-  toggleMobOption() {
+  toggleMobOption()
+  {
     this.menuClass = !this.menuClass;
     this.headerStyle = this.menuClass ? 'none' : '';
     this.collapseStyle = this.menuClass ? 'block' : 'none';
   }
 
   // this is for eslint rule
-  handleKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'Escape') {
+  handleKeyDown(event: KeyboardEvent): void
+  {
+    if (event.key === 'Escape')
+    {
       this.closeMenu();
     }
   }
 
-  closeMenu() {
-    if (document.querySelector('app-navigation.pcoded-navbar').classList.contains('mob-open')) {
+  closeMenu()
+  {
+    if (document.querySelector('app-navigation.pcoded-navbar').classList.contains('mob-open'))
+    {
       document.querySelector('app-navigation.pcoded-navbar').classList.remove('mob-open');
     }
   }

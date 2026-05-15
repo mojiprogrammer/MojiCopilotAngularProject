@@ -24,4 +24,5 @@ export class AuthService implements IAuthService
     const apiUrl = `${ this.serviceUrl }/api/Auth/UserLogin`;
     return this.http.post<LoginResponse>(apiUrl, request);
   }
+
 }

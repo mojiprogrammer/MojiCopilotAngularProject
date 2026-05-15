@@ -31,8 +31,8 @@ export class LoginResponse
 {
   public Success: boolean;
   public Message: string;
-  public AccessToken?: string;
-  public RefreshToken?: string;
+  public accessToken?: string;
+  public refreshToken?: string;
   public UserInfo?: UserInfoDto;
   public AccessTokenExpiry?: string;
 }

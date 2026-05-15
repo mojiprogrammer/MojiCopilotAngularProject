@@ -50,7 +50,7 @@ export class AuthSigninComponent implements OnInit, OnDestroy
   ngOnInit(): void
   {
     // Check if user is already logged in
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('accessToken');
     if (token)
     {
       this.router.navigate(['/dashboard']);
@@ -84,13 +84,13 @@ export class AuthSigninComponent implements OnInit, OnDestroy
       if (response)
       {
         // Store tokens and user data
-        if (response.AccessToken)
+        if (response.accessToken)
         {
-          localStorage.setItem('auth_token', response.AccessToken);
+          localStorage.setItem('accessToken', response.accessToken);
         }
-        if (response.RefreshToken)
+        if (response.refreshToken)
         {
-          localStorage.setItem('refresh_token', response.RefreshToken.toString());
+          localStorage.setItem('refreshToken', response.refreshToken.toString());
         }
 
         this.router.navigate(['/dashboard']);
@@ -285,7 +285,7 @@ export class AuthSigninComponent implements OnInit, OnDestroy
 
       if (data.token)
       {
-        localStorage.setItem('auth_token', data.token);
+        localStorage.setItem('accessToken', data.token);
       }
       if (data.user)
       {
