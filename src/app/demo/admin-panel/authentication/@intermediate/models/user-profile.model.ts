@@ -1,18 +1,20 @@
 export class UserProfileComplete
 {
-  public UserId?: number;
-  public Email?: string;
-  public Username?: string;
-  public FullName: string;
-  public FirstName: string;
-  public LastName: string;
-  public Phone: string;
-  public DateOfBirth?: Date;
-  public IsVerified?: boolean;
-  public IsActive?: boolean;
-  public MemberSince: string;
-  public UserLoginStatistic: UserLoginStatistics;
-  public RecentUserLogins: Array<UserRecentLogin>;
+  userId: number;
+  email: string;
+  username: string;
+  fullName: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  dateOfBirth: string;
+  isVerified: boolean;
+  isActive: boolean;
+  memberSince: string;
+  languageCode: string;
+  timezone: string;
+  userLoginStatistic: UserLoginStatistics;
+  recentUserLogins: UserRecentLogin[];
 }
 
 export class UserLoginStatistics

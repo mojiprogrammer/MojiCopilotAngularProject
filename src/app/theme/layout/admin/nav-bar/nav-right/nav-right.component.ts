@@ -15,15 +15,12 @@ import { SharedModule } from '../../../../shared/shared.module';
 })
 export class NavRightComponent implements OnInit
 {
-  // public props
   userFullName: string;
   userProfileImage: string = 'assets/images/user/mojianimation.png';
   isLoading: boolean = false;
   private userProfileService = inject(UserProfileService);
   // constructor
   constructor(
-    //private userProfileService: UserProfileService,
-    // eslint-disable-next-line @angular-eslint/prefer-inject
     private router: Router
   )
   {
@@ -33,55 +30,39 @@ export class NavRightComponent implements OnInit
 
   ngOnInit(): void
   {
-
-    console.log('=== Token Check ===');
-    console.log('auth_token:', localStorage.getItem('auth_token'));
-    console.log('accessToken:', localStorage.getItem('accessToken'));
-    console.log('All localStorage keys:', Object.keys(localStorage));
-    console.log('==================');
-
-
     this.loadUserProfile();
   }
 
   loadUserProfile(): void
   {
     this.isLoading = true;
-    console.log('Starting profile fetch...');
 
     this.userProfileService.GetUserProfileCompleteAsync().subscribe({
       next: (profile: UserProfileComplete) =>
       {
-        console.log('API Response received:', profile);
-        console.log('Profile FullName:', profile?.FullName);
-        console.log('Profile type:', typeof profile);
-        console.log('Profile keys:', Object.keys(profile));
 
-        if (profile.FullName)
+        if (profile.fullName)
         {
-          console.log('Setting FullName:', profile.FullName);
-          this.userFullName = profile.FullName;
-        } else if (profile.FirstName && profile.LastName)
+          console.log('Setting FullName:', profile.fullName);
+          this.userFullName = profile.fullName;
+        } else if (profile.firstName && profile.lastName)
         {
           console.log('Setting from FirstName + LastName');
-          this.userFullName = `${ profile.FirstName } ${ profile.LastName }`;
-        } else if (profile.FirstName)
+          this.userFullName = `${ profile.firstName } ${ profile.lastName }`;
+        } else if (profile.firstName)
         {
           console.log('Setting from FirstName only');
-          this.userFullName = profile.FirstName;
-        } else if (profile.Username)
+          this.userFullName = profile.firstName;
+        } else if (profile.username)
         {
           console.log('Setting from Username');
-          this.userFullName = profile.Username;
+          this.userFullName = profile.username;
         }
 
         this.isLoading = false;
       },
       error: (error: any) =>
       {
-        console.error('Error in subscription:', error);
-        console.error('Error status:', error?.status);
-        console.error('Error message:', error?.message);
         this.userFullName = 'User';
         this.isLoading = false;
       }
@@ -90,11 +71,8 @@ export class NavRightComponent implements OnInit
 
   logout(): void
   {
-    // Clear tokens - use the same keys as your login component
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-
-    // Navigate to login page
     this.router.navigate(['/auth/login']);
   }
 }
